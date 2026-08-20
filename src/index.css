@@ -11,46 +11,58 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   color-scheme: dark;
-  --background: #0F172A;
-  --foreground: #F8FAFC;
+  --background: #0f172a;
+  --foreground: #f8fafc;
   --card: #172238;
-  --card-foreground: #F8FAFC;
+  --card-foreground: #f8fafc;
   --popover: #172238;
-  --popover-foreground: #F8FAFC;
-  --primary: #38BDF8;
-  --primary-foreground: #082F49;
-  --secondary: #24324A;
-  --secondary-foreground: #E2E8F0;
-  --muted: #24324A;
-  --muted-foreground: #CBD5E1;
-  --accent: #24324A;
-  --accent-foreground: #F8FAFC;
-  --destructive: #F87171;
+  --popover-foreground: #f8fafc;
+  --primary: #38bdf8;
+  --primary-foreground: #082f49;
+  --secondary: #24324a;
+  --secondary-foreground: #e2e8f0;
+  --muted: #24324a;
+  --muted-foreground: #cbd5e1;
+  --accent: #24324a;
+  --accent-foreground: #f8fafc;
+  --destructive: #f87171;
   --border: #334155;
-  --input: #24324A;
-  --ring: #7DD3FC;
+  --input: #24324a;
+  --ring: #7dd3fc;
   --radius: 0.625rem;
   --sidebar: #172238;
-  --sidebar-foreground: #F8FAFC;
-  --sidebar-primary: #38BDF8;
-  --sidebar-primary-foreground: #082F49;
-  --sidebar-accent: #24324A;
-  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #38bdf8;
+  --sidebar-primary-foreground: #082f49;
+  --sidebar-accent: #24324a;
+  --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #334155;
-  --sidebar-ring: #7DD3FC;
-  --chart-1: #38BDF8;
-  --chart-2: #34D399;
-  --chart-3: #FBBF24;
-  --chart-4: #FB7185;
-  --chart-5: #A78BFA;
+  --sidebar-ring: #7dd3fc;
+  --chart-1: #38bdf8;
+  --chart-2: #34d399;
+  --chart-3: #fbbf24;
+  --chart-4: #fb7185;
+  --chart-5: #a78bfa;
   --font-sans: "Figtree Variable", sans-serif;
   --font-heading: "Figtree Variable", sans-serif;
-  --background-pattern: radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.08), transparent 28rem), radial-gradient(circle at 90% 35%, rgba(52, 211, 153, 0.05), transparent 24rem);
+  --background-pattern:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(56, 189, 248, 0.08),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 90% 35%,
+      rgba(52, 211, 153, 0.05),
+      transparent 24rem
+    );
   background-color: var(--background);
   color: var(--foreground);
 }
 
-* { border-color: var(--border); }
+* {
+  border-color: var(--border);
+}
 
 body {
   margin: 0;
@@ -91,7 +103,10 @@ body {
   outline-offset: 2px;
 }
 
-button, input { font: inherit; }
+button,
+input {
+  font: inherit;
+}
 
 @theme inline {
   --font-heading: var(--font-heading);
@@ -136,6 +151,10 @@ button, input { font: inherit; }
 }
 
 @layer base {
-  * { @apply outline-ring/50; }
-  body { @apply bg-background text-foreground; }
+  * {
+    @apply outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
