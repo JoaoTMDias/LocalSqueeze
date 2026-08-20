@@ -3,7 +3,6 @@ import {
   FileImage,
   FileText,
   FileVideo,
-  Gauge,
   ListChecks,
   Trash2,
   X,
@@ -41,7 +40,7 @@ export function CompressionQueue({
   };
 
   return (
-    <section className="border-t border-border/70 py-8">
+    <section className="animate-in fade-in slide-in-from-bottom-2 border-t border-border/70 py-8 duration-300">
       <div aria-live="polite" className="sr-only">
         {files.length} {files.length === 1 ? "file" : "files"} in the queue.
       </div>
@@ -73,15 +72,7 @@ export function CompressionQueue({
           )}
         </div>
       </div>
-      {files.length === 0 ? (
-        <div className="rounded-2xl border border-border/60 bg-card/30 px-6 py-12 text-center">
-          <Gauge className="mx-auto size-8 text-muted-foreground/60" />
-          <p className="mt-3 text-sm text-muted-foreground">
-            Your compressed files will appear here.
-          </p>
-        </div>
-      ) : (
-        <TooltipProvider>
+      <TooltipProvider>
           <ul className="space-y-2">
             {files.map((file) => (
               <li key={file.id}>
@@ -179,8 +170,7 @@ export function CompressionQueue({
               </li>
             ))}
           </ul>
-        </TooltipProvider>
-      )}
+      </TooltipProvider>
     </section>
   );
 }

@@ -209,11 +209,13 @@ function App() {
           className="py-6 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring lg:py-8"
         >
           <ImageDropzone onFilesSelected={handleDrop} />
-          <CompressionQueue
-            files={files}
-            onClear={clearFiles}
-            onRemove={removeFile}
-          />
+          {files.length > 0 && (
+            <CompressionQueue
+              files={files}
+              onClear={clearFiles}
+              onRemove={removeFile}
+            />
+          )}
         </section>
         <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span className="flex items-center gap-2">
