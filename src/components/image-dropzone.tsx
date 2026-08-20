@@ -27,10 +27,10 @@ export function ImageDropzone({ onFilesSelected }: ImageDropzoneProps) {
   return (
     <div
       {...getRootProps()}
-      className={`group relative flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed px-6 py-6 text-center transition-colors ${isDragActive ? "border-sky-300 bg-sky-400/10" : "border-border/90 bg-card/40 hover:border-sky-300/60 hover:bg-card/70"}`}
+      className={`group relative flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed px-6 py-6 text-center motion-safe:transition-colors motion-reduce:transition-none ${isDragActive ? "border-sky-300 bg-sky-400/10" : "border-border/90 bg-card/40 hover:border-sky-300/60 hover:bg-card/70"}`}
     >
       <input {...getInputProps({ "aria-label": "File picker" })} />
-      <div className="mb-5 grid size-16 place-items-center rounded-2xl border border-sky-300/20 bg-sky-300/10 text-sky-300 transition-transform group-hover:-translate-y-1">
+      <div className="mb-5 grid size-16 place-items-center rounded-2xl border border-sky-300/20 bg-sky-300/10 text-sky-300 motion-safe:transition-transform motion-safe:group-hover:-translate-y-1">
         <UploadCloud className="size-7" />
       </div>
       <h2 className="font-heading text-xl font-semibold">

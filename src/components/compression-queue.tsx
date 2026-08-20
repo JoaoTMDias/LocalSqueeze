@@ -40,7 +40,7 @@ export function CompressionQueue({
   };
 
   return (
-    <section className="animate-in fade-in slide-in-from-bottom-2 border-t border-border/70 py-8 duration-300">
+    <section className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 motion-reduce:animate-none border-t border-border/70 py-8">
       <div aria-live="polite" className="sr-only">
         {files.length} {files.length === 1 ? "file" : "files"} in the queue.
       </div>

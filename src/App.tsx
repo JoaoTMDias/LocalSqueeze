@@ -223,7 +223,7 @@ function App() {
             No uploads. No accounts. No compromises.
           </span>
           <a
-            className="text-foreground underline decoration-border underline-offset-2 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="text-foreground underline decoration-border underline-offset-2 motion-safe:transition-colors motion-reduce:transition-none hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             href="https://github.com/JoaoTMDias/LocalSqueeze"
             target="_blank"
             rel="noopener noreferrer"
