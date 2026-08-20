@@ -2,6 +2,24 @@
 
 Thanks for contributing. Squeeezer is a client-side project, so changes should preserve privacy, accessibility, and browser responsiveness.
 
+## Releases
+
+Squeeezer uses Changesets for single-package versioning and GitHub Actions for releases. For a user-facing change, create a changeset:
+
+```bash
+pnpm changeset
+```
+
+Choose `patch` for bug fixes, `minor` for backwards-compatible features, or `major` for breaking changes. Commit the generated `.changeset/*.md` file with the change.
+
+When changes reach `main`, the Release workflow creates or updates a version PR. Merging that PR updates `package.json` and `CHANGELOG.md`. The workflow then validates the build and creates a GitHub Release and version tag. The package is private and is not published to npm.
+
+Run the release checks locally with:
+
+```bash
+pnpm release:check
+```
+
 ## Before you start
 
 1. Check existing issues and pull requests.

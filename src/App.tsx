@@ -230,6 +230,7 @@ function App() {
           >
             Free, Open and Local by design
           </a>
+          <span className="text-muted-foreground">Squeeezer v{__APP_VERSION__}</span>
         </footer>
       </div>
       <Toaster />

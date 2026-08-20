@@ -7,6 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release:check": "pnpm lint && pnpm test && pnpm build",
+    "release": "pnpm release:check && gh release create v$(node -p \"require('./package.json').version\") --generate-notes --target main",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
@@ -41,6 +45,8 @@
     "workbox-window": "^7.4.1"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^1.0.0",
+    "@changesets/cli": "^3.0.1",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
