@@ -1,32 +1,47 @@
-# React + TypeScript + Vite
+# LocalSqueeze
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+LocalSqueeze is a privacy-first image compression app. JPEG, PNG, and WebP files are processed locally in the browser; no file data is sent to a server.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+pnpm install
+pnpm dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Create a production build with:
+
+```bash
+pnpm build
+```
+
+Run the linter with:
+
+```bash
+pnpm lint
+```
+
+## How Processing Works
+
+The UI uses `react-dropzone` to accept JPEG, PNG, and WebP files. Each file is read as an `ArrayBuffer` and transferred to `src/workers/image-compression.worker.ts`.
+
+The worker owns a Squoosh `ImagePool` and selects the codec based on the source format:
+
+- JPEG uses `mozjpeg`
+- PNG uses `oxipng`
+- WebP uses `webp`
+
+The worker sends progress milestones and either a transferable compressed buffer or an error message back to React. React creates a temporary `Blob` URL for completed files and revokes it when a queue item is removed or the page is unloaded.
+
+Compression quality is controlled in the UI and passed with each job. The current queue is intentionally image-only; PDF and video processing can be added as separate workers without moving heavy work onto the main thread.
+
+## Project Structure
+
+- `src/App.tsx`: dropzone, worker lifecycle, queue state, result display, and downloads
+- `src/workers/image-compression.worker.ts`: Squoosh codec execution and worker message protocol
+- `src/components/ui/`: shadcn/ui primitives used by the interface
+- `src/index.css`: Tailwind theme tokens and dark default styling
+
+## Privacy and Browser Support
+
+All file reads, codec work, and downloads happen in the browser. The app does not require an account or backend. A browser with module Web Worker, `ArrayBuffer`, and Blob URL support is required.
