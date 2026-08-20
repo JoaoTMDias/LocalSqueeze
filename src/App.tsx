@@ -6,18 +6,19 @@ import { AppHeader } from "@/components/app-header"
 import { CompressionControls } from "@/components/compression-controls"
 import { CompressionQueue } from "@/components/compression-queue"
 import { ImageDropzone } from "@/components/image-dropzone"
-import { imageFormat, type QueuedFile, type WorkerResponse } from "@/lib/compression"
+import { fileFormat, type QueuedFile, type WorkerResponse } from "@/lib/compression"
 
 function App() {
   const [files, setFiles] = useState<QueuedFile[]>([])
   const [quality, setQuality] = useState([72])
-  const [announcement, setAnnouncement] = useState("Ready to add images.")
+  const [announcement, setAnnouncement] = useState("Ready to add files.")
   const workerRef = useRef<Worker | null>(null)
   // Blob URLs are browser resources and must be revoked when rows leave the queue.
   const objectUrlsRef = useRef(new Map<string, string>())
 
   useEffect(() => {
     const worker = new Worker(new URL("./workers/image-compression.worker.ts", import.meta.url), { type: "module" })
+    const objectUrls = objectUrlsRef.current
     workerRef.current = worker
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
       if (data.type === "progress") {
@@ -26,38 +27,38 @@ function App() {
       }
       if (data.type === "error") {
         setFiles((current) => current.map((file) => file.id === data.id ? { ...file, status: "error", error: data.message } : file))
-        setAnnouncement("An image failed to compress.")
+        setAnnouncement("A file failed to compress.")
         return
       }
       const outputUrl = URL.createObjectURL(new Blob([data.buffer], { type: data.mimeType }))
-      objectUrlsRef.current.set(data.id, outputUrl)
+      objectUrls.set(data.id, outputUrl)
       setFiles((current) => current.map((file) => {
         if (file.id !== data.id) return file
         const compressedSize = data.buffer.byteLength
         return { ...file, progress: 100, status: "complete", compressedSize, savings: Math.round((1 - compressedSize / file.originalSize) * 100), outputUrl }
       }))
-      setAnnouncement("Image compression complete and ready to download.")
+      setAnnouncement("Compression complete and ready to download.")
     }
     worker.onerror = () => setAnnouncement("The image worker encountered an error.")
     return () => {
       worker.terminate()
-      objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
-      objectUrlsRef.current.clear()
+      objectUrls.forEach((url) => URL.revokeObjectURL(url))
+      objectUrls.clear()
     }
   }, [])
 
   const processFile = (file: File) => {
     const id = `${file.name}-${file.lastModified}-${file.size}-${crypto.randomUUID()}`
-    const format = imageFormat(file)
-    setFiles((current) => [...current, { id, name: file.name, originalSize: file.size, progress: 0, status: "processing" }])
-    setAnnouncement(`${file.name} added and compression started.`)
+    const format = fileFormat(file)
+    setFiles((current) => [...current, { id, name: file.name, format, originalSize: file.size, progress: 0, status: "processing" }])
+    setAnnouncement(`${file.name} added and processing started.`)
     file.arrayBuffer().then((buffer) => workerRef.current?.postMessage({ id, file: buffer, format, quality: quality[0] }, [buffer])).catch(() => {
       setFiles((current) => current.map((item) => item.id === id ? { ...item, status: "error", error: "Could not read this file." } : item))
     })
   }
 
   const handleDrop = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    if (rejectedFiles.length > 0) setAnnouncement(`${rejectedFiles.length} unsupported file${rejectedFiles.length === 1 ? "" : "s"} rejected. Add JPEG, PNG, or WebP images.`)
+    if (rejectedFiles.length > 0) setAnnouncement(`${rejectedFiles.length} unsupported file${rejectedFiles.length === 1 ? "" : "s"} rejected. Add JPEG, PNG, WebP, PDF, or MP4 files.`)
     acceptedFiles.forEach(processFile)
   }
 
@@ -68,7 +69,7 @@ function App() {
       objectUrlsRef.current.delete(id)
     }
     setFiles((current) => current.filter((file) => file.id !== id))
-    setAnnouncement("Image removed from the queue.")
+    setAnnouncement("File removed from the queue.")
   }
 
   const clearFiles = () => {
