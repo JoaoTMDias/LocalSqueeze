@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import type { FileRejection } from "react-dropzone"
-import { Check, Zap } from "lucide-react"
+import { Zap } from "lucide-react"
 import { registerSW } from "virtual:pwa-register"
 import { toast } from "sonner"
 
@@ -114,7 +114,7 @@ function App() {
         <div aria-live="polite" className="sr-only">{announcement}</div>
         <section className="grid gap-8 py-6 lg:grid-cols-[1.15fr_.85fr] lg:items-start lg:py-8"><ImageDropzone onFilesSelected={handleDrop} /><CompressionControls quality={quality} scale={scale} onQualityChange={setQuality} onScaleChange={setScale} /></section>
         <CompressionQueue files={files} onClear={clearFiles} onRemove={removeFile} />
-        <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-2"><Zap className="size-3.5 text-amber-300" />No uploads. No accounts. No compromises.</span><span className="flex items-center gap-1.5"><Check className="size-3.5 text-emerald-300" />Local by design</span></footer>
+        <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-2"><Zap className="size-3.5 text-amber-300" />No uploads. No accounts. No compromises.</span><a className="text-foreground underline decoration-border underline-offset-2 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href="https://github.com/JoaoTMDias/LocalSqueeze" target="_blank" rel="noopener noreferrer">Free, Open and Local by design</a></footer>
       </div>
       <Toaster />
     </main>
