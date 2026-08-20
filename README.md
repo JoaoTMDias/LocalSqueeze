@@ -1,6 +1,6 @@
 # LocalSqueeze
 
-LocalSqueeze is a privacy-first image compression app. JPEG, PNG, and WebP files are processed locally in the browser; no file data is sent to a server.
+LocalSqueeze is a privacy-first file compression app. JPEG, PNG, WebP, PDF, and MP4 files are processed locally in the browser; no file data is sent to a server.
 
 ## Development
 
@@ -23,13 +23,17 @@ pnpm lint
 
 ## How Processing Works
 
-The UI uses `react-dropzone` to accept JPEG, PNG, and WebP files. Each file is read as an `ArrayBuffer` and transferred to `src/workers/image-compression.worker.ts`.
+The UI uses `react-dropzone` to accept JPEG, PNG, WebP, PDF, and MP4 files. Each file is read as an `ArrayBuffer` and transferred to `src/workers/image-compression.worker.ts`.
 
 The worker owns a Squoosh `ImagePool` and selects the codec based on the source format:
 
 - JPEG uses `mozjpeg`
 - PNG uses `oxipng`
 - WebP uses `webp`
+
+PDF jobs use `pdf-lib` to remove document metadata and save with compact object streams. This is lossless structural optimization. `pdf-lib` does not expose a safe embedded-image XObject rewrite API, so the current implementation does not claim to downsample raster images or alter page content.
+
+MP4 jobs use `@ffmpeg/ffmpeg` and `@ffmpeg/core` in the same worker. The command uses H.264 with `-crf 28`, `-preset ultrafast`, AAC audio at `128k`, and `+faststart`. FFmpeg progress events are converted into queue progress updates without blocking React's main thread.
 
 The worker sends progress milestones and either a transferable compressed buffer or an error message back to React. React creates a temporary `Blob` URL for completed files and revokes it when a queue item is removed or the page is unloaded.
 
