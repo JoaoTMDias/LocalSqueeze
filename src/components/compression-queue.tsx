@@ -85,9 +85,9 @@ export function CompressionQueue({
           <ul className="space-y-2">
             {files.map((file) => (
               <li key={file.id}>
-                <Card className="min-h-12 border-border/60 bg-card/50">
+                <Card className="min-h-12 border-border/60 bg-card/50 p-0">
                   <CardContent className="flex min-h-12 flex-wrap items-center gap-2 p-2 sm:flex-nowrap">
-                  <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-sky-300">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-muted text-sky-300">
                     {file.format === "pdf" ? (
                       <FileText className="size-5" />
                     ) : file.format === "mp4" ? (
