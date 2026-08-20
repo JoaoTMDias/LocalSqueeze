@@ -8,6 +8,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    exclude: ["@jsquash/jpeg", "@jsquash/oxipng", "@jsquash/webp"],
+  },
   test: {
     environment: "jsdom",
     setupFiles: "./src/test/setup.ts",

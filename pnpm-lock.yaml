@@ -26,9 +26,15 @@ importers:
       '@hugeicons/react':
         specifier: ^1.1.9
         version: 1.1.9(react@19.2.8)
-      '@squoosh/lib':
-        specifier: ^0.5.3
-        version: 0.5.3
+      '@jsquash/jpeg':
+        specifier: ^1.6.0
+        version: 1.6.0
+      '@jsquash/oxipng':
+        specifier: ^2.3.0
+        version: 2.3.0
+      '@jsquash/webp':
+        specifier: ^1.5.0
+        version: 1.5.0
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -404,6 +410,15 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
+  '@jsquash/jpeg@1.6.0':
+    resolution: {integrity: sha512-zwN46Awh1VM6gXlIcALwb5WzqK5H2e6+Awcs1QP8AvS8ohsK/sbE4esvmH4jhlhW7+CgiUUww66vg0aTnlSIMA==}
+
+  '@jsquash/oxipng@2.3.0':
+    resolution: {integrity: sha512-aQ8wiEp6ztlTMXc+RMt/CG8crU3mEHDU+h+JYkIi6ctMhlh8+Ltj5XwQFfBuyzKYrp8NxaFW80Dp824bqjr+zA==}
+
+  '@jsquash/webp@1.5.0':
+    resolution: {integrity: sha512-KggLoj2MnRSfIqTeKe1EmbljTX2vuV7mh79k89PCL1pyqiDULcPM1L47twxXt0hkb68F70bXiL31MxsuoZtKFw==}
+
   '@modelcontextprotocol/sdk@1.30.0':
     resolution: {integrity: sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==}
     engines: {node: '>=18'}
@@ -661,10 +676,6 @@ packages:
   '@sindresorhus/merge-streams@4.0.0':
     resolution: {integrity: sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==}
     engines: {node: '>=18'}
-
-  '@squoosh/lib@0.5.3':
-    resolution: {integrity: sha512-d/yn6M0P5rk+L0QOl/hzvlHDqXCCmEvwdcYu7sXwhyYDNskg9oxlZtZTBaKKbX6Vq0rzajI9GZkDC0zXlz/oRw==}
-    engines: {node: ' ^12.5.0 || ^14.0.0 || ^16.0.0 '}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -2453,10 +2464,6 @@ packages:
   wasm-feature-detect@1.9.0:
     resolution: {integrity: sha512-zonE+xlIIYtxPy++L24ow0hAD8CICb4+FgPyROd3buyXIqsJvUEDkBgfCCoXOd1Hu3DUr0GOfnPIdcGV+YpNaA==}
 
-  web-streams-polyfill@3.3.3:
-    resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
-    engines: {node: '>= 8'}
-
   webidl-conversions@8.0.1:
     resolution: {integrity: sha512-BMhLD/Sw+GbJC21C/UgyaZX41nPt8bUTg+jWyDeg7e7YN4xOM05YPSIXceACnXVtqyEw/LMClUQMtMZ+PGGpqQ==}
     engines: {node: '>=20'}
@@ -2870,6 +2877,16 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@jsquash/jpeg@1.6.0': {}
+
+  '@jsquash/oxipng@2.3.0':
+    dependencies:
+      wasm-feature-detect: 1.9.0
+
+  '@jsquash/webp@1.5.0':
+    dependencies:
+      wasm-feature-detect: 1.9.0
+
   '@modelcontextprotocol/sdk@1.30.0(zod@3.25.76)':
     dependencies:
       '@hono/node-server': 2.1.1(hono@4.13.3)
@@ -3022,11 +3039,6 @@ snapshots:
   '@sec-ant/readable-stream@0.4.1': {}
 
   '@sindresorhus/merge-streams@4.0.0': {}
-
-  '@squoosh/lib@0.5.3':
-    dependencies:
-      wasm-feature-detect: 1.9.0
-      web-streams-polyfill: 3.3.3
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -4637,8 +4649,6 @@ snapshots:
       xml-name-validator: 5.0.0
 
   wasm-feature-detect@1.9.0: {}
-
-  web-streams-polyfill@3.3.3: {}
 
   webidl-conversions@8.0.1: {}
 

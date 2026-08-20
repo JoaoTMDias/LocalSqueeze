@@ -1,6 +1,8 @@
 import { FFmpeg } from "@ffmpeg/ffmpeg"
+import { encode as encodeJpeg } from "@jsquash/jpeg"
+import { optimise as optimisePng } from "@jsquash/oxipng"
+import { encode as encodeWebp } from "@jsquash/webp"
 import { PDFDocument } from "pdf-lib"
-import { ImagePool } from "@squoosh/lib"
 
 import type { FileFormat, ImageFormat, WorkerResponse } from "@/lib/compression"
 
@@ -18,8 +20,6 @@ type WorkerScope = {
   postMessage: (message: unknown, options?: StructuredSerializeOptions) => void
 }
 const worker = self as unknown as WorkerScope
-const imagePool = new ImagePool(1)
-
 const ffmpeg = new FFmpeg()
 let ffmpegLoadPromise: Promise<boolean> | undefined
 
@@ -34,23 +34,39 @@ function outputBuffer(bytes: Uint8Array) {
   return buffer
 }
 
+async function decodeImage(file: ArrayBuffer, mimeType: string) {
+  const bitmap = await createImageBitmap(new Blob([file], { type: mimeType }))
+  const canvas = new OffscreenCanvas(bitmap.width, bitmap.height)
+  const context = canvas.getContext("2d")
+  if (!context) {
+    bitmap.close()
+    throw new Error("Unable to create an OffscreenCanvas context.")
+  }
+  context.drawImage(bitmap, 0, 0)
+  bitmap.close()
+  return context.getImageData(0, 0, canvas.width, canvas.height)
+}
+
 async function compressImage(id: string, file: ArrayBuffer, format: ImageFormat, quality: number, scale: number) {
   postProgress(id, 5)
-  const image = imagePool.ingestImage(file)
-  const decoded = await image.decoded
+  const mimeType = format === "jpeg" ? "image/jpeg" : `image/${format}`
+  const decoded = await decodeImage(file, mimeType)
   postProgress(id, 35)
+  let imageData = decoded
   if (scale < 100) {
-    const width = Math.max(1, Math.round(decoded.bitmap.width * scale / 100))
-    await image.preprocess({ resize: { width } })
+    const width = Math.max(1, Math.round(decoded.width * scale / 100))
+    const height = Math.max(1, Math.round(decoded.height * scale / 100))
+    const canvas = new OffscreenCanvas(width, height)
+    const context = canvas.getContext("2d")
+    if (!context) throw new Error("Unable to create a resize canvas context.")
+    context.drawImage(await createImageBitmap(new ImageData(decoded.data, decoded.width, decoded.height)), 0, 0, width, height)
+    imageData = context.getImageData(0, 0, width, height)
   }
-  if (format === "jpeg") await image.encode({ mozjpeg: { quality } })
-  else if (format === "png") await image.encode({ oxipng: {} })
-  else await image.encode({ webp: { quality } })
+  if (format === "jpeg") return { buffer: outputBuffer(new Uint8Array(await encodeJpeg(imageData, { quality }))), mimeType }
+  if (format === "png") return { buffer: outputBuffer(new Uint8Array(await optimisePng(imageData))), mimeType }
+  const buffer = await encodeWebp(imageData, { quality })
   postProgress(id, 85)
-  const codec = format === "jpeg" ? "mozjpeg" : format === "png" ? "oxipng" : "webp"
-  const result = image.encodedWith[codec]
-  if (!result) throw new Error("The image codec returned no output.")
-  return { buffer: outputBuffer(result.binary), mimeType: format === "jpeg" ? "image/jpeg" : `image/${format}` }
+  return { buffer: outputBuffer(new Uint8Array(buffer)), mimeType }
 }
 
 async function compressPdf(id: string, file: ArrayBuffer) {
