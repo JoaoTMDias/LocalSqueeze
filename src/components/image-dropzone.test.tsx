@@ -2,10 +2,15 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { ImageDropzone } from "@/components/image-dropzone";
+import { LocaleProvider } from "@/lib/i18n";
 
 describe("ImageDropzone", () => {
   it("renders the supported image formats and native file input", () => {
-    render(<ImageDropzone onFilesSelected={vi.fn()} />);
+    render(
+      <LocaleProvider>
+        <ImageDropzone onFilesSelected={vi.fn()} />
+      </LocaleProvider>,
+    );
 
     expect(screen.getByText("Drop files here")).toBeInTheDocument();
     expect(screen.getByText(".JPG")).toBeInTheDocument();

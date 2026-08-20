@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import type { SvgCompressionOptions } from "@/lib/compression";
+import { useLocale } from "@/lib/i18n";
 
 type CompressionControlsProps = {
   quality: number;
@@ -33,6 +34,7 @@ export function CompressionControls({
   onScaleChange,
   onSvgOptionsChange,
 }: CompressionControlsProps) {
+  const { t } = useLocale();
   const currentSvgOptions = svgOptions ?? {
     preserveMetadata: true,
     aggressive: false,
@@ -41,37 +43,37 @@ export function CompressionControls({
     <div className="space-y-6">
       <Tabs defaultValue="balanced">
         <TabsList className="w-full">
-          <TabsTrigger value="small">Smallest</TabsTrigger>
-          <TabsTrigger value="balanced">Balanced</TabsTrigger>
-          <TabsTrigger value="quality">Quality</TabsTrigger>
+          <TabsTrigger value="small">{t("smallest")}</TabsTrigger>
+          <TabsTrigger value="balanced">{t("balanced")}</TabsTrigger>
+          <TabsTrigger value="quality">{t("quality")}</TabsTrigger>
         </TabsList>
         <TabsContent
           value="small"
           className="pt-4 text-sm text-muted-foreground"
         >
-          Prioritize a smaller output size.
+          {t("smallestDescription")}
         </TabsContent>
         <TabsContent
           value="balanced"
           className="pt-4 text-sm text-muted-foreground"
         >
-          A practical balance for everyday sharing.
+          {t("balancedDescription")}
         </TabsContent>
         <TabsContent
           value="quality"
           className="pt-4 text-sm text-muted-foreground"
         >
-          Preserve more detail in the output.
+          {t("qualityDescription")}
         </TabsContent>
       </Tabs>
       <Accordion defaultValue={[]}>
         <AccordionItem value="advanced">
-          <AccordionTrigger>Advanced settings</AccordionTrigger>
+          <AccordionTrigger>{t("advancedSettings")}</AccordionTrigger>
           <AccordionContent>
             <div className="space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="font-medium">Quality</span>
+                  <span className="font-medium">{t("quality")}</span>
                   <span className="text-muted-foreground">{quality}%</span>
                 </div>
                 <Slider
@@ -86,7 +88,7 @@ export function CompressionControls({
                         : Number(value[0] ?? 80),
                     )
                   }
-                  aria-label="Compression quality"
+                  aria-label={t("compressionQuality")}
                 />
               </div>
               <div className="space-y-2">
@@ -94,7 +96,7 @@ export function CompressionControls({
                   htmlFor="dimension-scale"
                   className="text-sm font-medium"
                 >
-                  Dimension scaling
+                  {t("dimensionScaling")}
                 </label>
                 <Select
                   value={String(scale)}
@@ -118,16 +120,16 @@ export function CompressionControls({
       </Accordion>
       <div className="space-y-4 border-t border-border/60 pt-4">
         <div>
-          <h3 className="text-sm font-medium">SVG compression</h3>
+          <h3 className="text-sm font-medium">{t("svgCompression")}</h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            These options apply when compressing SVG files.
+            {t("svgDescription")}
           </p>
         </div>
         <label
           htmlFor="preserve-svg-metadata"
           className="flex items-center justify-between gap-4 text-sm"
         >
-          <span>Preserve metadata and accessibility</span>
+          <span>{t("preserveMetadata")}</span>
           <Switch
             id="preserve-svg-metadata"
             checked={currentSvgOptions.preserveMetadata}
@@ -143,7 +145,7 @@ export function CompressionControls({
           htmlFor="aggressive-svg-optimization"
           className="flex items-center justify-between gap-4 text-sm"
         >
-          <span>Aggressive optimization</span>
+          <span>{t("aggressiveOptimization")}</span>
           <Switch
             id="aggressive-svg-optimization"
             checked={currentSvgOptions.aggressive}

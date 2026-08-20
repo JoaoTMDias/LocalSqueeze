@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatBytes, type QueuedFile } from "@/lib/compression";
+import { formatLocalizedNumber, useLocale } from "@/lib/i18n";
 
 type CompressionQueueProps = {
   files: QueuedFile[];
@@ -31,6 +32,7 @@ export function CompressionQueue({
   onClear,
   onRemove,
 }: CompressionQueueProps) {
+  const { locale, t } = useLocale();
   const downloadFile = (file: QueuedFile) => {
     if (!file.outputUrl) return;
     const link = document.createElement("a");
@@ -42,22 +44,20 @@ export function CompressionQueue({
   return (
     <section className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 motion-reduce:animate-none border-t border-border/70 py-8">
       <div aria-live="polite" className="sr-only">
-        {files.length} {files.length === 1 ? "file" : "files"} in the queue.
+        {t("queueFiles", { count: files.length })}
       </div>
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
           <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <ListChecks className="size-4 text-sky-300" />
-            Your queue
+            {t("yourQueue")}
           </p>
           <h2 className="mt-1 font-heading text-2xl font-semibold">
-            Compression results
+            {t("compressionResults")}
           </h2>
         </div>
         <div className="flex items-center gap-3">
-          <Badge variant="outline">
-            {files.length} {files.length === 1 ? "file" : "files"}
-          </Badge>
+          <Badge variant="outline">{t("files", { count: files.length })}</Badge>
           {files.length > 0 && (
             <Button
               type="button"
@@ -67,17 +67,17 @@ export function CompressionQueue({
               onClick={onClear}
             >
               <Trash2 />
-              Clear all
+              {t("clearAll")}
             </Button>
           )}
         </div>
       </div>
       <TooltipProvider>
-          <ul className="space-y-2">
-            {files.map((file) => (
-              <li key={file.id}>
-                <Card className="min-h-12 border-border/60 bg-card/50 p-0">
-                  <CardContent className="flex min-h-12 flex-wrap items-center gap-2 p-2 sm:flex-nowrap">
+        <ul className="space-y-2">
+          {files.map((file) => (
+            <li key={file.id}>
+              <Card className="min-h-12 border-border/60 bg-card/50 p-0">
+                <CardContent className="flex min-h-12 flex-wrap items-center gap-2 p-2 sm:flex-nowrap">
                   <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-muted text-sky-300">
                     {file.format === "pdf" ? (
                       <FileText className="size-5" />
@@ -90,7 +90,9 @@ export function CompressionQueue({
                   <div className="min-w-40 flex-1 sm:w-56 sm:min-w-0 sm:flex-none">
                     <p className="truncate text-sm font-medium">{file.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      Original: {formatBytes(file.originalSize)}
+                      {t("original", {
+                        size: formatBytes(file.originalSize, locale),
+                      })}
                     </p>
                   </div>
                   <div className="w-full min-w-40 flex-1 space-y-1.5 sm:min-w-0">
@@ -99,11 +101,11 @@ export function CompressionQueue({
                         {file.status === "error"
                           ? file.error
                           : file.status === "complete"
-                            ? "Complete"
-                            : "Compressing"}
+                            ? t("complete")
+                            : t("compressing")}
                       </span>
                       <span className="tabular-nums text-muted-foreground">
-                        {file.progress}%
+                        {formatLocalizedNumber(file.progress, locale)}%
                       </span>
                     </div>
                     <Progress value={file.progress} />
@@ -120,11 +122,13 @@ export function CompressionQueue({
                     >
                       {file.status === "complete"
                         ? `${file.savings && file.savings > 0 ? "-" : "+"}${Math.abs(file.savings ?? 0)}%`
-                        : file.status}
+                        : file.status === "error"
+                          ? t("error")
+                          : t("compressing")}
                     </Badge>
                     {file.compressedSize && (
                       <span className="text-muted-foreground">
-                        {formatBytes(file.compressedSize)}
+                        {formatBytes(file.compressedSize, locale)}
                       </span>
                     )}
                   </div>
@@ -137,7 +141,7 @@ export function CompressionQueue({
                             size="icon"
                             className="size-10"
                             variant="ghost"
-                            aria-label={`Download ${file.name}`}
+                            aria-label={t("download", { name: file.name })}
                             disabled={!file.outputUrl}
                             onClick={() => downloadFile(file)}
                           />
@@ -145,7 +149,7 @@ export function CompressionQueue({
                       >
                         <Download />
                       </TooltipTrigger>
-                      <TooltipContent>Download file</TooltipContent>
+                      <TooltipContent>{t("downloadFile")}</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger
@@ -155,21 +159,21 @@ export function CompressionQueue({
                             size="icon"
                             className="size-10"
                             variant="ghost"
-                            aria-label={`Remove ${file.name}`}
+                            aria-label={t("remove", { name: file.name })}
                             onClick={() => onRemove(file.id)}
                           />
                         }
                       >
                         <X />
                       </TooltipTrigger>
-                      <TooltipContent>Remove file</TooltipContent>
+                      <TooltipContent>{t("removeFile")}</TooltipContent>
                     </Tooltip>
                   </div>
-                  </CardContent>
-                </Card>
-              </li>
-            ))}
-          </ul>
+                </CardContent>
+              </Card>
+            </li>
+          ))}
+        </ul>
       </TooltipProvider>
     </section>
   );

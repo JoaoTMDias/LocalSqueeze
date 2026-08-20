@@ -12,6 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import type { SvgCompressionOptions } from "@/lib/compression";
+import { useLocale } from "@/lib/i18n";
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -35,6 +36,7 @@ export function AppHeader({
   onScaleChange,
   onSvgOptionsChange,
 }: AppHeaderProps) {
+  const { t } = useLocale();
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(
     null,
   );
@@ -88,9 +90,14 @@ export function AppHeader({
         <Sheet>
           <SheetTrigger
             render={
-              <Button id="compression-controls" className="min-w-0 flex-1 sm:flex-none" variant="outline" size="sm">
+              <Button
+                id="compression-controls"
+                className="min-w-0 flex-1 sm:flex-none"
+                variant="outline"
+                size="sm"
+              >
                 <Settings />
-                Compression controls
+                {t("compressionControls")}
               </Button>
             }
           />
@@ -99,10 +106,8 @@ export function AppHeader({
             className="max-sm:inset-x-0 max-sm:inset-y-auto max-sm:right-auto max-sm:bottom-0 max-sm:h-auto max-sm:w-full max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:data-ending-style:translate-x-0 max-sm:data-starting-style:translate-x-0 max-sm:data-ending-style:translate-y-[2.5rem] max-sm:data-starting-style:translate-y-[2.5rem]"
           >
             <SheetHeader>
-              <SheetTitle>Compression controls</SheetTitle>
-              <SheetDescription>
-                Balanced defaults are ready to go.
-              </SheetDescription>
+              <SheetTitle>{t("compressionControls")}</SheetTitle>
+              <SheetDescription>{t("compressionDefaults")}</SheetDescription>
             </SheetHeader>
             <div className="overflow-y-auto px-6 pb-6">
               <CompressionControls
@@ -117,9 +122,14 @@ export function AppHeader({
           </SheetContent>
         </Sheet>
         {installPrompt && (
-          <Button className="min-w-0 flex-1 sm:flex-none" variant="outline" size="sm" onClick={installApp}>
+          <Button
+            className="min-w-0 flex-1 sm:flex-none"
+            variant="outline"
+            size="sm"
+            onClick={installApp}
+          >
             <Download />
-            Install App
+            {t("installApp")}
           </Button>
         )}
       </div>
