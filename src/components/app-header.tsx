@@ -70,25 +70,25 @@ export function AppHeader({
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-border/70 pb-3">
-      <div className="flex items-center gap-3">
-        <div className="grid size-9 place-items-center overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/10">
+    <header className="flex flex-col gap-3 border-b border-border/70 pb-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/10">
           <img src="/logo.svg" className="size-9" alt="" />
         </div>
-        <div>
-          <h1 className="font-heading text-lg font-semibold tracking-tight text-foreground">
+        <div className="min-w-0">
+          <h1 className="truncate font-heading text-lg font-semibold tracking-tight text-foreground">
             Squeeezer
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="truncate text-sm text-muted-foreground">
             Make files lighter. Keep them yours.
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex w-full items-center gap-2 sm:w-auto">
         <Sheet>
           <SheetTrigger
             render={
-              <Button id="compression-controls" variant="outline" size="sm">
+              <Button id="compression-controls" className="min-w-0 flex-1 sm:flex-none" variant="outline" size="sm">
                 <Settings />
                 Compression controls
               </Button>
@@ -117,7 +117,7 @@ export function AppHeader({
           </SheetContent>
         </Sheet>
         {installPrompt && (
-          <Button variant="outline" size="sm" onClick={installApp}>
+          <Button className="min-w-0 flex-1 sm:flex-none" variant="outline" size="sm" onClick={installApp}>
             <Download />
             Install App
           </Button>
