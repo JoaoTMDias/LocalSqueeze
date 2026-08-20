@@ -86,7 +86,7 @@ export function CompressionQueue({
             {files.map((file) => (
               <li key={file.id}>
                 <Card className="min-h-12 border-border/60 bg-card/50">
-                  <CardContent className="flex min-h-12 flex-wrap items-center gap-2 p-2">
+                  <CardContent className="flex min-h-12 flex-wrap items-center gap-2 p-2 sm:flex-nowrap">
                   <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-sky-300">
                     {file.format === "pdf" ? (
                       <FileText className="size-5" />
@@ -96,13 +96,13 @@ export function CompressionQueue({
                       <FileImage className="size-5" />
                     )}
                   </div>
-                  <div className="min-w-40 flex-1">
+                  <div className="min-w-40 flex-1 sm:w-56 sm:min-w-0 sm:flex-none">
                     <p className="truncate text-sm font-medium">{file.name}</p>
                     <p className="text-xs text-muted-foreground">
                       Original: {formatBytes(file.originalSize)}
                     </p>
                   </div>
-                  <div className="w-full min-w-40 flex-1 space-y-1.5 sm:w-36">
+                  <div className="w-full min-w-40 flex-1 space-y-1.5 sm:min-w-0">
                     <div className="flex justify-between text-xs">
                       <span className="text-muted-foreground">
                         {file.status === "error"
