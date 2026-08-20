@@ -11,7 +11,7 @@ type InstallPromptEvent = Event & {
 
 function ShrinkingCubeLogo() {
   return (
-    <svg viewBox="0 0 512 512" className="size-10" role="img" aria-label="LocalSqueeze logo">
+    <svg viewBox="0 0 512 512" className="size-9" role="img" aria-label="LocalSqueeze logo">
       <defs>
         <linearGradient id="outerGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#38BDF8" stopOpacity="0.4" /><stop offset="100%" stopColor="#818CF8" stopOpacity="0.1" /></linearGradient>
         <linearGradient id="innerGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#38BDF8" /><stop offset="100%" stopColor="#6366F1" /></linearGradient>
@@ -54,8 +54,8 @@ export function AppHeader() {
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-border/70 pb-6">
-      <div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/10"><ShrinkingCubeLogo /></div><div><p className="font-heading text-lg font-semibold tracking-tight">LocalSqueeze</p><p className="text-xs text-muted-foreground">Private image optimization</p></div></div>
+    <header className="flex items-center justify-between border-b border-border/70 pb-3">
+      <div className="flex items-center gap-3"><div className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/10"><ShrinkingCubeLogo /></div><div><h1 className="font-heading text-lg font-semibold tracking-tight text-foreground">LocalSqueeze</h1><p className="text-sm text-muted-foreground">Make files lighter. Keep them yours.</p></div></div>
       <div className="flex items-center gap-2">
         {installPrompt && <Button variant="outline" size="sm" onClick={installApp}><Download />Install App</Button>}
         <Badge variant="outline" className="gap-1.5 border-emerald-400/30 bg-emerald-400/10 text-emerald-300"><span className="size-1.5 rounded-full bg-emerald-400" />Client-side only</Badge>
