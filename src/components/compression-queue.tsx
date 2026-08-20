@@ -13,6 +13,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { formatBytes, type QueuedFile } from "@/lib/compression";
 
 type CompressionQueueProps = {
@@ -75,11 +81,12 @@ export function CompressionQueue({
           </p>
         </div>
       ) : (
-        <ul className="space-y-3">
-          {files.map((file) => (
-            <li key={file.id}>
-              <Card className="border-border/60 bg-card/50">
-                <CardContent className="flex flex-wrap items-center gap-4 p-4">
+        <TooltipProvider>
+          <ul className="space-y-2">
+            {files.map((file) => (
+              <li key={file.id}>
+                <Card className="min-h-12 border-border/60 bg-card/50">
+                  <CardContent className="flex min-h-12 flex-wrap items-center gap-2 p-2">
                   <div className="grid size-11 shrink-0 place-items-center rounded-lg bg-muted text-sky-300">
                     {file.format === "pdf" ? (
                       <FileText className="size-5" />
@@ -131,31 +138,48 @@ export function CompressionQueue({
                     )}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Button
-                      type="button"
-                      size="icon-sm"
-                      variant="ghost"
-                      aria-label={`Download ${file.name}`}
-                      disabled={!file.outputUrl}
-                      onClick={() => downloadFile(file)}
-                    >
-                      <Download />
-                    </Button>
-                    <Button
-                      type="button"
-                      size="icon-sm"
-                      variant="ghost"
-                      aria-label={`Remove ${file.name}`}
-                      onClick={() => onRemove(file.id)}
-                    >
-                      <X />
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            type="button"
+                            size="icon"
+                            className="size-10"
+                            variant="ghost"
+                            aria-label={`Download ${file.name}`}
+                            disabled={!file.outputUrl}
+                            onClick={() => downloadFile(file)}
+                          />
+                        }
+                      >
+                        <Download />
+                      </TooltipTrigger>
+                      <TooltipContent>Download file</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            type="button"
+                            size="icon"
+                            className="size-10"
+                            variant="ghost"
+                            aria-label={`Remove ${file.name}`}
+                            onClick={() => onRemove(file.id)}
+                          />
+                        }
+                      >
+                        <X />
+                      </TooltipTrigger>
+                      <TooltipContent>Remove file</TooltipContent>
+                    </Tooltip>
                   </div>
-                </CardContent>
-              </Card>
-            </li>
-          ))}
-        </ul>
+                  </CardContent>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        </TooltipProvider>
       )}
     </section>
   );
