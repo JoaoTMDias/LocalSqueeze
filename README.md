@@ -28,6 +28,24 @@ pnpm dev
 
 The development server is then available at the URL printed by Vite.
 
+## Deploying to Netlify
+
+The repository includes [netlify.toml](netlify.toml) with the required settings:
+
+- Build command: `pnpm build`
+- Publish directory: `dist`
+- Node.js: `22`
+- WebAssembly MIME type and SPA fallback configuration
+
+To deploy through the Netlify dashboard:
+
+1. Push the repository to GitHub, GitLab, or Bitbucket.
+2. In Netlify, choose **Add new site** and **Import an existing project**.
+3. Select the repository and keep the detected settings from `netlify.toml`.
+4. Deploy the site.
+
+Netlify will run the build on every push to the connected production branch. The application is fully client-side; no environment variables or backend service are required. After deployment, test image, PDF, and MP4 processing from the deployed URL because WASM asset loading must be verified in the production environment.
+
 ## Verification
 
 Run the unit/component tests:
