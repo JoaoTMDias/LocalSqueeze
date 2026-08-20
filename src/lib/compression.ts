@@ -24,11 +24,15 @@ export type WorkerResponse =
   | { type: "complete"; id: string; buffer: ArrayBuffer; mimeType: string }
   | { type: "error"; id: string; message: string };
 
-export function formatBytes(bytes: number) {
+export function formatBytes(bytes: number, locale: "en" | "pt-PT" = "en") {
   if (bytes === 0) return "0 B";
   const units = ["B", "KB", "MB", "GB"];
   const unitIndex = Math.floor(Math.log(bytes) / Math.log(1024));
-  return `${(bytes / 1024 ** unitIndex).toFixed(unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+  const value = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: unitIndex === 0 ? 0 : 1,
+    maximumFractionDigits: unitIndex === 0 ? 0 : 1,
+  }).format(bytes / 1024 ** unitIndex);
+  return `${value} ${units[unitIndex]}`;
 }
 
 export function imageFormat(file: File): ImageFormat {

@@ -3,6 +3,7 @@ import { LockKeyhole, Plus, UploadCloud } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n";
 
 const acceptedFileTypes = {
   "image/jpeg": [".jpg", ".jpeg"],
@@ -18,6 +19,7 @@ type ImageDropzoneProps = {
 };
 
 export function ImageDropzone({ onFilesSelected }: ImageDropzoneProps) {
+  const { t } = useLocale();
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     noClick: true,
     accept: acceptedFileTypes,
@@ -29,15 +31,15 @@ export function ImageDropzone({ onFilesSelected }: ImageDropzoneProps) {
       {...getRootProps()}
       className={`group relative flex min-h-72 flex-col items-center justify-center rounded-2xl border border-dashed px-6 py-6 text-center motion-safe:transition-colors motion-reduce:transition-none ${isDragActive ? "border-sky-300 bg-sky-400/10" : "border-border/90 bg-card/40 hover:border-sky-300/60 hover:bg-card/70"}`}
     >
-      <input {...getInputProps({ "aria-label": "File picker" })} />
+      <input {...getInputProps({ "aria-label": t("filePicker") })} />
       <div className="mb-5 grid size-16 place-items-center rounded-2xl border border-sky-300/20 bg-sky-300/10 text-sky-300 motion-safe:transition-transform motion-safe:group-hover:-translate-y-1">
         <UploadCloud className="size-7" />
       </div>
       <h2 className="font-heading text-xl font-semibold">
-        {isDragActive ? "Release to compress" : "Drop files here"}
+        {isDragActive ? t("releaseToCompress") : t("dropFiles")}
       </h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        Images, SVGs, PDFs, and MP4 video are supported
+        {t("supportedTypes")}
       </p>
       <div className="mt-4 flex flex-wrap justify-center gap-2">
         <Badge variant="outline">.JPG</Badge>
@@ -54,11 +56,11 @@ export function ImageDropzone({ onFilesSelected }: ImageDropzoneProps) {
         onClick={open}
       >
         <Plus />
-        Browse files
+        {t("browseFiles")}
       </Button>
       <div className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground">
         <LockKeyhole className="size-3.5 shrink-0 text-emerald-300" />
-        Processed locally in your browser
+        {t("processedLocally")}
       </div>
     </div>
   );

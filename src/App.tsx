@@ -14,8 +14,10 @@ import {
   type SvgCompressionOptions,
   type WorkerResponse,
 } from "@/lib/compression";
+import { formatLocalizedNumber, useLocale } from "@/lib/i18n";
 
 function App() {
+  const { locale, setLocale, t } = useLocale();
   const [files, setFiles] = useState<QueuedFile[]>([]);
   const [quality, setQuality] = useState(80);
   const [scale, setScale] = useState(100);
@@ -23,7 +25,7 @@ function App() {
     preserveMetadata: true,
     aggressive: false,
   });
-  const [announcement, setAnnouncement] = useState("Ready to add files.");
+  const [announcement, setAnnouncement] = useState(() => t("ready"));
   const workerRef = useRef<Worker | null>(null);
   const updateServiceWorkerRef = useRef<
     ((reloadPage?: boolean) => Promise<void>) | null
@@ -49,7 +51,11 @@ function App() {
           data.progress % 25 === 0 ||
           data.progress === 100
         )
-          setAnnouncement(`Compression progress: ${data.progress}%.`);
+          setAnnouncement(
+            t("compressionProgress", {
+              progress: formatLocalizedNumber(data.progress, locale),
+            }),
+          );
         return;
       }
       if (data.type === "error") {
@@ -60,7 +66,7 @@ function App() {
               : file,
           ),
         );
-        setAnnouncement("A file failed to compress.");
+        setAnnouncement(t("compressionFailed"));
         return;
       }
       const outputUrl = URL.createObjectURL(
@@ -81,10 +87,9 @@ function App() {
           };
         }),
       );
-      setAnnouncement("Compression complete and ready to download.");
+      setAnnouncement(t("compressionComplete"));
     };
-    worker.onerror = () =>
-      setAnnouncement("The image worker encountered an error.");
+    worker.onerror = () => setAnnouncement(t("workerError"));
     return worker;
   };
 
@@ -101,12 +106,12 @@ function App() {
     updateServiceWorkerRef.current = registerSW({
       immediate: true,
       onNeedRefresh() {
-        toast("Nova versão disponível", {
+        toast(t("updateAvailable"), {
           id: "app-update",
-          description: "Atualize para carregar as alterações mais recentes.",
+          description: t("updateDescription"),
           duration: Infinity,
           action: {
-            label: "Atualizar",
+            label: t("update"),
             onClick: () => void updateServiceWorkerRef.current?.(true),
           },
         });
@@ -115,7 +120,7 @@ function App() {
     return () => {
       updateServiceWorkerRef.current = null;
     };
-  }, []);
+  }, [locale, t]);
 
   const processFile = (file: File) => {
     const worker = workerRef.current ?? createWorker();
@@ -132,7 +137,7 @@ function App() {
         status: "processing",
       },
     ]);
-    setAnnouncement(`${file.name} added and processing started.`);
+    setAnnouncement(t("fileAdded", { name: file.name }));
     file
       .arrayBuffer()
       .then((buffer) =>
@@ -145,7 +150,7 @@ function App() {
         setFiles((current) =>
           current.map((item) =>
             item.id === id
-              ? { ...item, status: "error", error: "Could not read this file." }
+              ? { ...item, status: "error", error: t("fileReadError") }
               : item,
           ),
         );
@@ -157,9 +162,7 @@ function App() {
     rejectedFiles: FileRejection[],
   ) => {
     if (rejectedFiles.length > 0)
-      setAnnouncement(
-        `${rejectedFiles.length} unsupported file${rejectedFiles.length === 1 ? "" : "s"} rejected. Add JPEG, PNG, SVG, WebP, PDF, or MP4 files.`,
-      );
+      setAnnouncement(t("unsupportedFiles", { count: rejectedFiles.length }));
     acceptedFiles.forEach(processFile);
   };
 
@@ -170,24 +173,24 @@ function App() {
       objectUrlsRef.current.delete(id);
     }
     setFiles((current) => current.filter((file) => file.id !== id));
-    setAnnouncement("File removed from the queue.");
+    setAnnouncement(t("fileRemoved"));
   };
 
   const clearFiles = () => {
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     objectUrlsRef.current.clear();
     setFiles([]);
-    setAnnouncement("Queue cleared.");
+    setAnnouncement(t("queueCleared"));
   };
 
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <SkipLinks
         items={[
-          { target: "#main-content", text: "Skip to main content" },
+          { target: "#main-content", text: t("skipMain") },
           {
             target: "#compression-controls",
-            text: "Skip to compression controls",
+            text: t("skipControls"),
           },
         ]}
       />
@@ -220,7 +223,7 @@ function App() {
         <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <span className="flex items-center gap-2">
             <Zap className="size-3.5 text-amber-300" />
-            No uploads. No accounts. No compromises.
+            {t("footerPrivacy")}
           </span>
           <a
             className="text-foreground underline decoration-border underline-offset-2 motion-safe:transition-colors motion-reduce:transition-none hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -228,9 +231,28 @@ function App() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Free, Open and Local by design
+            {t("footerOpen")}
           </a>
-          <span className="text-muted-foreground">Squeeezer v{__APP_VERSION__}</span>
+          <span className="text-muted-foreground">
+            Squeeezer v{__APP_VERSION__}
+          </span>
+          <label
+            className="flex items-center gap-2 text-foreground"
+            htmlFor="language-select"
+          >
+            {t("language")}
+            <select
+              id="language-select"
+              className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              value={locale}
+              onChange={(event) =>
+                setLocale(event.target.value as typeof locale)
+              }
+            >
+              <option value="en">{t("languageEnglish")}</option>
+              <option value="pt-PT">{t("languagePortuguese")}</option>
+            </select>
+          </label>
         </footer>
       </div>
       <Toaster />

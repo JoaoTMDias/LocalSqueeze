@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { CompressionQueue } from "@/components/compression-queue";
 import type { QueuedFile } from "@/lib/compression";
+import { LocaleProvider } from "@/lib/i18n";
 
 const completeFile: QueuedFile = {
   id: "photo-1",
@@ -19,11 +20,13 @@ const completeFile: QueuedFile = {
 describe("CompressionQueue", () => {
   it("renders file sizes, progress, savings, and download action", () => {
     render(
-      <CompressionQueue
-        files={[completeFile]}
-        onClear={vi.fn()}
-        onRemove={vi.fn()}
-      />,
+      <LocaleProvider>
+        <CompressionQueue
+          files={[completeFile]}
+          onClear={vi.fn()}
+          onRemove={vi.fn()}
+        />
+      </LocaleProvider>,
     );
 
     expect(screen.getByText("photo.jpg")).toBeInTheDocument();
@@ -42,11 +45,13 @@ describe("CompressionQueue", () => {
   it("calls remove and exposes the clear action", () => {
     const onRemove = vi.fn();
     render(
-      <CompressionQueue
-        files={[completeFile]}
-        onClear={vi.fn()}
-        onRemove={onRemove}
-      />,
+      <LocaleProvider>
+        <CompressionQueue
+          files={[completeFile]}
+          onClear={vi.fn()}
+          onRemove={onRemove}
+        />
+      </LocaleProvider>,
     );
 
     const removeButtons = screen.getAllByRole("button", {
