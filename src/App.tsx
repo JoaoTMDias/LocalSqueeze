@@ -10,7 +10,8 @@ import { fileFormat, type QueuedFile, type WorkerResponse } from "@/lib/compress
 
 function App() {
   const [files, setFiles] = useState<QueuedFile[]>([])
-  const [quality, setQuality] = useState([72])
+  const [quality, setQuality] = useState(80)
+  const [scale, setScale] = useState(100)
   const [announcement, setAnnouncement] = useState("Ready to add files.")
   const workerRef = useRef<Worker | null>(null)
   // Blob URLs are browser resources and must be revoked when rows leave the queue.
@@ -23,6 +24,7 @@ function App() {
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
       if (data.type === "progress") {
         setFiles((current) => current.map((file) => file.id === data.id ? { ...file, progress: data.progress } : file))
+        if (data.progress === 10 || data.progress % 25 === 0 || data.progress === 100) setAnnouncement(`Compression progress: ${data.progress}%.`)
         return
       }
       if (data.type === "error") {
@@ -52,7 +54,7 @@ function App() {
     const format = fileFormat(file)
     setFiles((current) => [...current, { id, name: file.name, format, originalSize: file.size, progress: 0, status: "processing" }])
     setAnnouncement(`${file.name} added and processing started.`)
-    file.arrayBuffer().then((buffer) => workerRef.current?.postMessage({ id, file: buffer, format, quality: quality[0] }, [buffer])).catch(() => {
+    file.arrayBuffer().then((buffer) => workerRef.current?.postMessage({ id, file: buffer, format, quality, scale }, [buffer])).catch(() => {
       setFiles((current) => current.map((item) => item.id === id ? { ...item, status: "error", error: "Could not read this file." } : item))
     })
   }
@@ -84,7 +86,7 @@ function App() {
       <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
         <AppHeader />
         <div aria-live="polite" className="sr-only">{announcement}</div>
-        <section className="grid gap-8 py-10 lg:grid-cols-[1.15fr_.85fr] lg:items-start lg:py-14"><ImageDropzone onFilesSelected={handleDrop} /><CompressionControls quality={quality} onQualityChange={setQuality} /></section>
+        <section className="grid gap-8 py-10 lg:grid-cols-[1.15fr_.85fr] lg:items-start lg:py-14"><ImageDropzone onFilesSelected={handleDrop} /><CompressionControls quality={quality} scale={scale} onQualityChange={setQuality} onScaleChange={setScale} /></section>
         <CompressionQueue files={files} onClear={clearFiles} onRemove={removeFile} />
         <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-2"><Zap className="size-3.5 text-amber-300" />No uploads. No accounts. No compromises.</span><span className="flex items-center gap-1.5"><Check className="size-3.5 text-emerald-300" />Local by design</span></footer>
       </div>

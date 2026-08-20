@@ -10,6 +10,7 @@ type CompressRequest = {
   file: ArrayBuffer
   format: FileFormat
   quality: number
+  scale: number
 }
 
 type WorkerScope = {
@@ -33,11 +34,15 @@ function outputBuffer(bytes: Uint8Array) {
   return buffer
 }
 
-async function compressImage(id: string, file: ArrayBuffer, format: ImageFormat, quality: number) {
+async function compressImage(id: string, file: ArrayBuffer, format: ImageFormat, quality: number, scale: number) {
   postProgress(id, 5)
   const image = imagePool.ingestImage(file)
-  await image.decoded
+  const decoded = await image.decoded
   postProgress(id, 35)
+  if (scale < 100) {
+    const width = Math.max(1, Math.round(decoded.bitmap.width * scale / 100))
+    await image.preprocess({ resize: { width } })
+  }
   if (format === "jpeg") await image.encode({ mozjpeg: { quality } })
   else if (format === "png") await image.encode({ oxipng: {} })
   else await image.encode({ webp: { quality } })
@@ -76,7 +81,7 @@ async function loadFfmpeg() {
   await ffmpegLoadPromise
 }
 
-async function compressMp4(id: string, file: ArrayBuffer) {
+async function compressMp4(id: string, file: ArrayBuffer, scale: number) {
   await loadFfmpeg()
   const inputName = `${id}.mp4`
   const outputName = `${id}-compressed.mp4`
@@ -84,7 +89,8 @@ async function compressMp4(id: string, file: ArrayBuffer) {
   const onProgress = ({ progress }: { progress: number }) => postProgress(id, Math.min(95, Math.max(10, Math.round(progress * 85 + 10))))
   ffmpeg.on("progress", onProgress)
   try {
-    await ffmpeg.exec(["-i", inputName, "-c:v", "libx264", "-crf", "28", "-preset", "ultrafast", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", outputName])
+    const scaleFilter = scale < 100 ? ["-vf", `scale=trunc(iw*${scale / 100}/2)*2:trunc(ih*${scale / 100}/2)*2`] : []
+    await ffmpeg.exec(["-i", inputName, ...scaleFilter, "-c:v", "libx264", "-crf", "28", "-preset", "ultrafast", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", outputName])
   } finally {
     ffmpeg.off("progress", onProgress)
   }
@@ -100,8 +106,8 @@ worker.onmessage = async ({ data }: MessageEvent<CompressRequest>) => {
     const result = data.format === "pdf"
       ? await compressPdf(data.id, data.file)
       : data.format === "mp4"
-        ? await compressMp4(data.id, data.file)
-        : await compressImage(data.id, data.file, data.format, data.quality)
+        ? await compressMp4(data.id, data.file, data.scale)
+        : await compressImage(data.id, data.file, data.format, data.quality, data.scale)
     postProgress(data.id, 100)
     worker.postMessage({ type: "complete", id: data.id, ...result } satisfies WorkerResponse, { transfer: [result.buffer] })
   } catch (error) {

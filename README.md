@@ -37,7 +37,9 @@ MP4 jobs use `@ffmpeg/ffmpeg` and `@ffmpeg/core` in the same worker. The command
 
 The worker sends progress milestones and either a transferable compressed buffer or an error message back to React. React creates a temporary `Blob` URL for completed files and revokes it when a queue item is removed or the page is unloaded.
 
-Compression quality is controlled in the UI and passed with each job. The current queue is intentionally image-only; PDF and video processing can be added as separate workers without moving heavy work onto the main thread.
+Compression quality is controlled in the UI and passed with each job. PDF and video processing share the worker boundary without moving heavy work onto the main thread.
+
+Advanced Settings are optional and collapsed by default. They expose a quality slider from `0%` to `100%` (default `80%`) and dimension scaling at `100%`, `75%`, or `50%`. These values are passed to the worker for image resizing and MP4 video scaling. Progress milestones are exposed through an `aria-live` region for screen readers.
 
 ## Project Structure
 
