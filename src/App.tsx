@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import type { FileRejection } from "react-dropzone"
+import { SkipLinks } from "@jtmdias/react-a11y-tools"
 import { Zap } from "lucide-react"
 import { registerSW } from "virtual:pwa-register"
 import { toast, Toaster } from "sonner"
@@ -107,11 +108,11 @@ function App() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
+      <SkipLinks items={[{ target: "#main-content", text: "Skip to main content" }, { target: "#compression-controls", text: "Skip to compression controls" }]} />
       <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
         <AppHeader quality={quality} scale={scale} onQualityChange={setQuality} onScaleChange={setScale} />
         <div aria-live="polite" className="sr-only">{announcement}</div>
-        <section className="py-6 lg:py-8"><ImageDropzone onFilesSelected={handleDrop} /></section>
-        <CompressionQueue files={files} onClear={clearFiles} onRemove={removeFile} />
+        <section id="main-content" tabIndex={-1} className="py-6 outline-none lg:py-8"><ImageDropzone onFilesSelected={handleDrop} /><CompressionQueue files={files} onClear={clearFiles} onRemove={removeFile} /></section>
         <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-2"><Zap className="size-3.5 text-amber-300" />No uploads. No accounts. No compromises.</span><a className="text-foreground underline decoration-border underline-offset-2 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href="https://github.com/JoaoTMDias/LocalSqueeze" target="_blank" rel="noopener noreferrer">Free, Open and Local by design</a></footer>
       </div>
       <Toaster />

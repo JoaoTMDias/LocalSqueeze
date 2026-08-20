@@ -22,6 +22,7 @@
     "@jsquash/jpeg": "^1.6.0",
     "@jsquash/oxipng": "^2.3.0",
     "@jsquash/webp": "^1.5.0",
+    "@jtmdias/react-a11y-tools": "^3.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.32.0",

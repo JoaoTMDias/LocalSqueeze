@@ -35,6 +35,9 @@ importers:
       '@jsquash/webp':
         specifier: ^1.5.0
         version: 1.5.0
+      '@jtmdias/react-a11y-tools':
+        specifier: ^3.1.1
+        version: 3.1.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -835,6 +838,16 @@ packages:
 
   '@jsquash/webp@1.5.0':
     resolution: {integrity: sha512-KggLoj2MnRSfIqTeKe1EmbljTX2vuV7mh79k89PCL1pyqiDULcPM1L47twxXt0hkb68F70bXiL31MxsuoZtKFw==}
+
+  '@jtmdias/js-utilities@3.1.0':
+    resolution: {integrity: sha512-YiYW9dAiOK9eIwYDQo5AlKxI95hJG1x2uZ45IVoHrklJKVyUHHghNWnwgD8jJyuDqjkANxH33S2IApcsoqUUMw==}
+
+  '@jtmdias/react-a11y-tools@3.1.1':
+    resolution: {integrity: sha512-EJ359/bkYPTwNniAzODeFqUJ84FKk+tLkesEws6H2E0dJ41Qsd8SoRxENT6rKBfiTk+kUmcKU0ZV1S19KuAscA==}
+    engines: {node: '>= 20', npm: '>= 10'}
+    peerDependencies:
+      react: '>= 18'
+      react-dom: '>= 18'
 
   '@modelcontextprotocol/sdk@1.30.0':
     resolution: {integrity: sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==}
@@ -2074,6 +2087,17 @@ packages:
   find-up@3.0.0:
     resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
     engines: {node: '>=6'}
+
+  focus-trap-react@11.0.6:
+    resolution: {integrity: sha512-8YbWR8kDf2pQ8G9LT11p39VY4T7eWVrj00Fhp1HUSdv5uW9q6+WK8OMAdy9Ui7vGb1zNouFDzwBIqJwt82rIYQ==}
+    peerDependencies:
+      '@types/react': ^18.0.0 || ^19.0.0
+      '@types/react-dom': ^18.0.0 || ^19.0.0
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  focus-trap@7.8.0:
+    resolution: {integrity: sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==}
 
   for-each@0.3.5:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
@@ -3369,6 +3393,9 @@ packages:
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
 
+  tabbable@6.5.0:
+    resolution: {integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==}
+
   tailwind-merge@3.6.0:
     resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
 
@@ -4662,6 +4689,21 @@ snapshots:
     dependencies:
       wasm-feature-detect: 1.9.0
 
+  '@jtmdias/js-utilities@3.1.0':
+    optionalDependencies:
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
+  '@jtmdias/react-a11y-tools@3.1.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@jtmdias/js-utilities': 3.1.0
+      focus-trap-react: 11.0.6(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+
   '@modelcontextprotocol/sdk@1.30.0(zod@3.25.76)':
     dependencies:
       '@hono/node-server': 2.1.1(hono@4.13.3)
@@ -5753,6 +5795,19 @@ snapshots:
   find-up@3.0.0:
     dependencies:
       locate-path: 3.0.0
+
+  focus-trap-react@11.0.6(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      '@types/react': 19.2.18
+      '@types/react-dom': 19.2.4(@types/react@19.2.18)
+      focus-trap: 7.8.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      tabbable: 6.5.0
+
+  focus-trap@7.8.0:
+    dependencies:
+      tabbable: 6.5.0
 
   for-each@0.3.5:
     dependencies:
@@ -7072,6 +7127,8 @@ snapshots:
   symbol-tree@3.2.4: {}
 
   systeminformation@5.33.1: {}
+
+  tabbable@6.5.0: {}
 
   tailwind-merge@3.6.0: {}
 

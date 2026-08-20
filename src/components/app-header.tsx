@@ -50,7 +50,7 @@ export function AppHeader({ quality, scale, onQualityChange, onScaleChange }: Ap
       <div className="flex items-center gap-3"><div className="grid size-9 place-items-center overflow-hidden rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/10"><img src="/logo.svg" className="size-9" alt="" /></div><div><h1 className="font-heading text-lg font-semibold tracking-tight text-foreground">LocalSqueeze</h1><p className="text-sm text-muted-foreground">Make files lighter. Keep them yours.</p></div></div>
       <div className="flex items-center gap-2">
         <Sheet>
-          <SheetTrigger render={<Button variant="outline" size="sm"><Settings />Compression controls</Button>} />
+          <SheetTrigger render={<Button id="compression-controls" variant="outline" size="sm"><Settings />Compression controls</Button>} />
           <SheetContent side="right" className="max-sm:inset-x-0 max-sm:inset-y-auto max-sm:right-auto max-sm:bottom-0 max-sm:h-auto max-sm:w-full max-sm:max-w-none max-sm:border-l-0 max-sm:border-t max-sm:data-ending-style:translate-x-0 max-sm:data-starting-style:translate-x-0 max-sm:data-ending-style:translate-y-[2.5rem] max-sm:data-starting-style:translate-y-[2.5rem]">
             <SheetHeader>
               <SheetTitle>Compression controls</SheetTitle>
