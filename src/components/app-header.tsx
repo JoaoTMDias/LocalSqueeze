@@ -1,4 +1,13 @@
+import { useEffect, useState } from "react"
+import { Download } from "lucide-react"
+
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+
+type InstallPromptEvent = Event & {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
+}
 
 function ShrinkingCubeLogo() {
   return (
@@ -17,10 +26,40 @@ function ShrinkingCubeLogo() {
 }
 
 export function AppHeader() {
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null)
+
+  useEffect(() => {
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches
+    if (isStandalone) return
+
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault()
+      setInstallPrompt(event as InstallPromptEvent)
+    }
+    const handleAppInstalled = () => setInstallPrompt(null)
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+    window.addEventListener("appinstalled", handleAppInstalled)
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt)
+      window.removeEventListener("appinstalled", handleAppInstalled)
+    }
+  }, [])
+
+  const installApp = async () => {
+    if (!installPrompt) return
+    await installPrompt.prompt()
+    const { outcome } = await installPrompt.userChoice
+    if (outcome === "accepted") setInstallPrompt(null)
+  }
+
   return (
     <header className="flex items-center justify-between border-b border-border/70 pb-6">
       <div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/10"><ShrinkingCubeLogo /></div><div><p className="font-heading text-lg font-semibold tracking-tight">LocalSqueeze</p><p className="text-xs text-muted-foreground">Private image optimization</p></div></div>
-      <Badge variant="outline" className="gap-1.5 border-emerald-400/30 bg-emerald-400/10 text-emerald-300"><span className="size-1.5 rounded-full bg-emerald-400" />Client-side only</Badge>
+      <div className="flex items-center gap-2">
+        {installPrompt && <Button variant="outline" size="sm" onClick={installApp}><Download />Install App</Button>}
+        <Badge variant="outline" className="gap-1.5 border-emerald-400/30 bg-emerald-400/10 text-emerald-300"><span className="size-1.5 rounded-full bg-emerald-400" />Client-side only</Badge>
+      </div>
     </header>
   )
 }

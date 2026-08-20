@@ -17,9 +17,8 @@ function App() {
   // Blob URLs are browser resources and must be revoked when rows leave the queue.
   const objectUrlsRef = useRef(new Map<string, string>())
 
-  useEffect(() => {
+  const createWorker = () => {
     const worker = new Worker(new URL("./workers/image-compression.worker.ts", import.meta.url), { type: "module" })
-    const objectUrls = objectUrlsRef.current
     workerRef.current = worker
     worker.onmessage = ({ data }: MessageEvent<WorkerResponse>) => {
       if (data.type === "progress") {
@@ -33,7 +32,7 @@ function App() {
         return
       }
       const outputUrl = URL.createObjectURL(new Blob([data.buffer], { type: data.mimeType }))
-      objectUrls.set(data.id, outputUrl)
+      objectUrlsRef.current.set(data.id, outputUrl)
       setFiles((current) => current.map((file) => {
         if (file.id !== data.id) return file
         const compressedSize = data.buffer.byteLength
@@ -42,19 +41,22 @@ function App() {
       setAnnouncement("Compression complete and ready to download.")
     }
     worker.onerror = () => setAnnouncement("The image worker encountered an error.")
-    return () => {
-      worker.terminate()
-      objectUrls.forEach((url) => URL.revokeObjectURL(url))
-      objectUrls.clear()
-    }
+    return worker
+  }
+
+  useEffect(() => () => {
+    workerRef.current?.terminate()
+    objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
+    objectUrlsRef.current.clear()
   }, [])
 
   const processFile = (file: File) => {
+    const worker = workerRef.current ?? createWorker()
     const id = `${file.name}-${file.lastModified}-${file.size}-${crypto.randomUUID()}`
     const format = fileFormat(file)
     setFiles((current) => [...current, { id, name: file.name, format, originalSize: file.size, progress: 0, status: "processing" }])
     setAnnouncement(`${file.name} added and processing started.`)
-    file.arrayBuffer().then((buffer) => workerRef.current?.postMessage({ id, file: buffer, format, quality, scale }, [buffer])).catch(() => {
+    file.arrayBuffer().then((buffer) => worker.postMessage({ id, file: buffer, format, quality, scale }, [buffer])).catch(() => {
       setFiles((current) => current.map((item) => item.id === id ? { ...item, status: "error", error: "Could not read this file." } : item))
     })
   }
