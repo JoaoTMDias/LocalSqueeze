@@ -1,0 +1,41 @@
+name: Bug report
+description: Report a reproducible problem in LocalSqueeze
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve LocalSqueeze. Please avoid attaching private files.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 131, Firefox 133, Safari 18
+    validations:
+      required: true
+  - type: input
+    id: formats
+    attributes:
+      label: File format
+      placeholder: JPEG, PNG, WebP, PDF, or MP4
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: List the smallest set of steps that reproduces the issue.
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console output
+      description: Include relevant errors, but redact paths or private data.
+      render: text

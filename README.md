@@ -1,6 +1,23 @@
 # LocalSqueeze
 
-LocalSqueeze is a privacy-first file compression app. JPEG, PNG, WebP, PDF, and MP4 files are processed locally in the browser; no file data is sent to a server.
+LocalSqueeze is a privacy-first file compression app for the browser. JPEG, PNG, WebP, PDF, and MP4 files are processed locally on the user's device. Files are not uploaded to a server.
+
+## Features
+
+- JPEG, PNG, and WebP image compression in a dedicated Web Worker
+- PDF metadata and structural optimization with `pdf-lib`
+- MP4 H.264 transcoding with FFmpeg Wasm
+- Optional quality and dimension controls
+- Transferable `ArrayBuffer` worker protocol
+- Progress updates in the queue and through an `aria-live` region
+- Downloadable results with temporary browser Blob URLs
+- Dark interface designed for keyboard and screen-reader use
+
+## Requirements
+
+- Node.js 22 or newer
+- pnpm 10 or newer
+- A modern browser with Web Worker, WebAssembly, Blob URL, and file API support
 
 ## Development
 
@@ -9,45 +26,93 @@ pnpm install
 pnpm dev
 ```
 
-Create a production build with:
+The development server is then available at the URL printed by Vite.
+
+## Verification
+
+Run the unit/component tests:
 
 ```bash
-pnpm build
+pnpm test
 ```
 
-Run the linter with:
+Run linting:
 
 ```bash
 pnpm lint
 ```
 
-## How Processing Works
+Create a production build:
 
-The UI uses `react-dropzone` to accept JPEG, PNG, WebP, PDF, and MP4 files. Each file is read as an `ArrayBuffer` and transferred to `src/workers/image-compression.worker.ts`.
+```bash
+pnpm build
+```
 
-The worker owns a Squoosh `ImagePool` and selects the codec based on the source format:
+Run the browser E2E suite against a production preview:
 
-- JPEG uses `mozjpeg`
-- PNG uses `oxipng`
-- WebP uses `webp`
+```bash
+pnpm exec playwright install --with-deps chromium
+pnpm test:e2e
+```
 
-PDF jobs use `pdf-lib` to remove document metadata and save with compact object streams. This is lossless structural optimization. `pdf-lib` does not expose a safe embedded-image XObject rewrite API, so the current implementation does not claim to downsample raster images or alter page content.
+The E2E suite verifies that the built app can load codec assets, upload a PNG, receive Worker progress, reach completion, and expose the download action. It also checks the optional Advanced Settings controls.
 
-MP4 jobs use `@ffmpeg/ffmpeg` and `@ffmpeg/core` in the same worker. The command uses H.264 with `-crf 28`, `-preset ultrafast`, AAC audio at `128k`, and `+faststart`. FFmpeg progress events are converted into queue progress updates without blocking React's main thread.
+## Architecture
 
-The worker sends progress milestones and either a transferable compressed buffer or an error message back to React. React creates a temporary `Blob` URL for completed files and revokes it when a queue item is removed or the page is unloaded.
+The main application coordinates state and owns the Worker lifecycle. Presentational responsibilities are split into focused components:
 
-Compression quality is controlled in the UI and passed with each job. PDF and video processing share the worker boundary without moving heavy work onto the main thread.
+- `src/components/app-header.tsx`: branding and client-side status
+- `src/components/image-dropzone.tsx`: accepted formats and native file input
+- `src/components/compression-controls.tsx`: presets and optional advanced controls
+- `src/components/compression-queue.tsx`: progress, savings, and downloads
+- `src/lib/compression.ts`: shared formats, queue types, and helpers
+- `src/workers/image-compression.worker.ts`: image, PDF, and MP4 processing
 
-Advanced Settings are optional and collapsed by default. They expose a quality slider from `0%` to `100%` (default `80%`) and dimension scaling at `100%`, `75%`, or `50%`. These values are passed to the worker for image resizing and MP4 video scaling. Progress milestones are exposed through an `aria-live` region for screen readers.
+### Image processing
 
-## Project Structure
+Image jobs use browser-focused jSquash codecs:
 
-- `src/App.tsx`: dropzone, worker lifecycle, queue state, result display, and downloads
-- `src/workers/image-compression.worker.ts`: Squoosh codec execution and worker message protocol
-- `src/components/ui/`: shadcn/ui primitives used by the interface
-- `src/index.css`: Tailwind theme tokens and dark default styling
+- `@jsquash/jpeg` for JPEG encoding
+- `@jsquash/oxipng` for lossless PNG optimization
+- `@jsquash/webp` for WebP encoding
+- `createImageBitmap` and `OffscreenCanvas` for decoding and resizing
 
-## Privacy and Browser Support
+The app intentionally does not use `@squoosh/lib`; that package is a stale Node-oriented library and is not suitable for this browser Worker architecture.
 
-All file reads, codec work, and downloads happen in the browser. The app does not require an account or backend. A browser with module Web Worker, `ArrayBuffer`, and Blob URL support is required.
+### PDF processing
+
+PDF jobs use `pdf-lib` to remove document metadata and save with compact object streams. This is lossless structural optimization. Embedded image rasterization/downsampling is not currently performed because `pdf-lib` does not expose a safe public XObject rewrite API.
+
+### Video processing
+
+MP4 jobs use `@ffmpeg/ffmpeg` and `@ffmpeg/core` in the Worker with H.264, CRF 28, ultrafast preset, AAC audio, and fast-start output. FFmpeg progress events are mapped to queue progress updates.
+
+## Privacy and browser behavior
+
+Compression happens locally. The app does not require an account, backend, or runtime CDN asset. WASM files are emitted and served as application assets.
+
+The Worker protocol transfers input and output buffers rather than copying them. Completed output is represented by a temporary Blob URL, which is revoked when a queue item is removed or the app is unloaded.
+
+Large files can require substantial memory. Process one file at a time when working near browser limits, and test target browsers before deploying a public instance.
+
+## Contributing
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Please add tests for behavior changes and preserve the no-upload, Worker-based design.
+
+Security issues should be reported according to [SECURITY.md](SECURITY.md), not through a public issue. Community participation follows [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+## Branding
+
+The source code is available under the MIT License. “LocalSqueeze” and the project logo are project branding and are not granted for use as the name or identity of modified or hosted versions. Forks are welcome; please use a distinct name and visual identity so users can tell them apart from the official project.
+
+## Known limitations
+
+- PNG quality is lossless optimization rather than JPEG-style perceptual quality.
+- PDF image downsampling is not implemented.
+- MP4 processing requires enough browser memory for FFmpeg Wasm.
+- Browser codec and OffscreenCanvas support varies by browser version.
+- The project currently targets Chromium in automated E2E tests; Firefox and Safari still require release-matrix validation.
+
+## License
+
+The source code is licensed under the [MIT License](LICENSE). Third-party dependencies retain their own licenses; consult their documentation and package metadata when redistributing a built bundle.
