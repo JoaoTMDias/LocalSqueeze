@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react"
 import type { FileRejection } from "react-dropzone"
 import { Check, Zap } from "lucide-react"
+import { registerSW } from "virtual:pwa-register"
+import { toast } from "sonner"
 
 import { AppHeader } from "@/components/app-header"
 import { CompressionControls } from "@/components/compression-controls"
 import { CompressionQueue } from "@/components/compression-queue"
 import { ImageDropzone } from "@/components/image-dropzone"
+import { Toaster } from "@/components/ui/sonner"
 import { fileFormat, type QueuedFile, type WorkerResponse } from "@/lib/compression"
 
 function App() {
@@ -14,6 +17,7 @@ function App() {
   const [scale, setScale] = useState(100)
   const [announcement, setAnnouncement] = useState("Ready to add files.")
   const workerRef = useRef<Worker | null>(null)
+  const updateServiceWorkerRef = useRef<((reloadPage?: boolean) => Promise<void>) | null>(null)
   // Blob URLs are browser resources and must be revoked when rows leave the queue.
   const objectUrlsRef = useRef(new Map<string, string>())
 
@@ -48,6 +52,26 @@ function App() {
     workerRef.current?.terminate()
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url))
     objectUrlsRef.current.clear()
+  }, [])
+
+  useEffect(() => {
+    updateServiceWorkerRef.current = registerSW({
+      immediate: true,
+      onNeedRefresh() {
+        toast("Nova versão disponível", {
+          id: "app-update",
+          description: "Atualize para carregar as alterações mais recentes.",
+          duration: Infinity,
+          action: {
+            label: "Atualizar",
+            onClick: () => void updateServiceWorkerRef.current?.(true),
+          },
+        })
+      },
+    })
+    return () => {
+      updateServiceWorkerRef.current = null
+    }
   }, [])
 
   const processFile = (file: File) => {
@@ -92,6 +116,7 @@ function App() {
         <CompressionQueue files={files} onClear={clearFiles} onRemove={removeFile} />
         <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-2"><Zap className="size-3.5 text-amber-300" />No uploads. No accounts. No compromises.</span><span className="flex items-center gap-1.5"><Check className="size-3.5 text-emerald-300" />Local by design</span></footer>
       </div>
+      <Toaster />
     </main>
   )
 }
