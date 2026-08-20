@@ -4,6 +4,7 @@ import { Download, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CompressionControls } from "@/components/compression-controls"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import type { SvgCompressionOptions } from "@/lib/compression"
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>
@@ -13,11 +14,13 @@ type InstallPromptEvent = Event & {
 type AppHeaderProps = {
   quality: number
   scale: number
+  svgOptions: SvgCompressionOptions
   onQualityChange: (value: number) => void
   onScaleChange: (value: number) => void
+  onSvgOptionsChange: (value: SvgCompressionOptions) => void
 }
 
-export function AppHeader({ quality, scale, onQualityChange, onScaleChange }: AppHeaderProps) {
+export function AppHeader({ quality, scale, svgOptions, onQualityChange, onScaleChange, onSvgOptionsChange }: AppHeaderProps) {
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null)
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export function AppHeader({ quality, scale, onQualityChange, onScaleChange }: Ap
               <SheetTitle>Compression controls</SheetTitle>
               <SheetDescription>Balanced defaults are ready to go.</SheetDescription>
             </SheetHeader>
-            <div className="overflow-y-auto px-6 pb-6"><CompressionControls quality={quality} scale={scale} onQualityChange={onQualityChange} onScaleChange={onScaleChange} /></div>
+            <div className="overflow-y-auto px-6 pb-6"><CompressionControls quality={quality} scale={scale} svgOptions={svgOptions} onQualityChange={onQualityChange} onScaleChange={onScaleChange} onSvgOptionsChange={onSvgOptionsChange} /></div>
           </SheetContent>
         </Sheet>
         {installPrompt && <Button variant="outline" size="sm" onClick={installApp}><Download />Install App</Button>}

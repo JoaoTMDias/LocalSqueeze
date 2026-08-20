@@ -3,8 +3,9 @@ import { encode as encodeJpeg } from "@jsquash/jpeg"
 import { optimise as optimisePng } from "@jsquash/oxipng"
 import { encode as encodeWebp } from "@jsquash/webp"
 import { PDFDocument } from "pdf-lib"
+import type { PluginConfig } from "svgo/browser"
 
-import type { FileFormat, ImageFormat, WorkerResponse } from "@/lib/compression"
+import type { FileFormat, ImageFormat, SvgCompressionOptions, WorkerResponse } from "@/lib/compression"
 
 
 type CompressRequest = {
@@ -13,6 +14,7 @@ type CompressRequest = {
   format: FileFormat
   quality: number
   scale: number
+  svgOptions: SvgCompressionOptions
 }
 
 type WorkerScope = {
@@ -87,6 +89,43 @@ async function compressPdf(id: string, file: ArrayBuffer) {
   return { buffer: outputBuffer(bytes), mimeType: "application/pdf" }
 }
 
+function validateSvg(svg: string) {
+  if (!/<svg(?:\s|>)/i.test(svg)) throw new Error("The file does not contain a valid SVG root.")
+  if (/<(?:script|foreignObject|iframe|object|embed)\b/i.test(svg) || /\bon[a-z]+\s*=/i.test(svg) || /(?:javascript|vbscript):/i.test(svg) || /<!doctype/i.test(svg)) {
+    throw new Error("This SVG contains unsupported or potentially unsafe content.")
+  }
+}
+
+async function compressSvg(id: string, file: ArrayBuffer, options: SvgCompressionOptions) {
+  postProgress(id, 10)
+  const source = new TextDecoder("utf-8", { fatal: true }).decode(file)
+  validateSvg(source)
+  postProgress(id, 25)
+  const { builtinPlugins, optimize } = await import("svgo/browser")
+  const presetDefault = builtinPlugins.find((plugin) => plugin.name === "preset-default")
+  if (!presetDefault) throw new Error("SVG optimizer preset is unavailable.")
+  const presetConfig: PluginConfig = {
+    name: "preset-default",
+    fn: presetDefault.fn,
+    params: {
+      overrides: {
+        cleanupIds: options.aggressive,
+        removeMetadata: options.preserveMetadata ? false : undefined,
+        removeDesc: options.preserveMetadata ? false : undefined,
+      },
+    },
+  }
+  const result = optimize(source, {
+    plugins: [presetConfig, ...(options.preserveMetadata ? [] : ["removeTitle" as const])],
+  })
+  postProgress(id, 80)
+  validateSvg(result.data)
+  const optimized = new TextEncoder().encode(result.data)
+  const input = new Uint8Array(file)
+  postProgress(id, 95)
+  return { buffer: outputBuffer(optimized.byteLength < input.byteLength ? optimized : input), mimeType: "image/svg+xml" }
+}
+
 async function loadFfmpeg() {
   if (!ffmpegLoadPromise) {
     ffmpegLoadPromise = ffmpeg.load({
@@ -119,7 +158,9 @@ async function compressMp4(id: string, file: ArrayBuffer, scale: number) {
 
 worker.onmessage = async ({ data }: MessageEvent<CompressRequest>) => {
   try {
-    const result = data.format === "pdf"
+    const result = data.format === "svg"
+      ? await compressSvg(data.id, data.file, data.svgOptions)
+      : data.format === "pdf"
       ? await compressPdf(data.id, data.file)
       : data.format === "mp4"
         ? await compressMp4(data.id, data.file, data.scale)

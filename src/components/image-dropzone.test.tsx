@@ -11,6 +11,7 @@ describe("ImageDropzone", () => {
     expect(screen.getByText(".JPG")).toBeInTheDocument()
     expect(screen.getByText(".PNG")).toBeInTheDocument()
     expect(screen.getByText(".WEBP")).toBeInTheDocument()
-    expect(screen.getByLabelText("File picker")).toHaveAttribute("accept", "image/jpeg,.jpg,.jpeg,image/png,.png,image/webp,.webp,application/pdf,.pdf,video/mp4,.mp4")
+    expect(screen.getByText(".SVG")).toBeInTheDocument()
+    expect(screen.getByLabelText("File picker")).toHaveAttribute("accept", "image/jpeg,.jpg,.jpeg,image/png,.png,image/webp,.webp,image/svg+xml,.svg,application/pdf,.pdf,video/mp4,.mp4")
   })
 })

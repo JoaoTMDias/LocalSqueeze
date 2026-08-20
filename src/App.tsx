@@ -8,12 +8,13 @@ import { toast, Toaster } from "sonner"
 import { AppHeader } from "@/components/app-header"
 import { CompressionQueue } from "@/components/compression-queue"
 import { ImageDropzone } from "@/components/image-dropzone"
-import { fileFormat, type QueuedFile, type WorkerResponse } from "@/lib/compression"
+import { fileFormat, type QueuedFile, type SvgCompressionOptions, type WorkerResponse } from "@/lib/compression"
 
 function App() {
   const [files, setFiles] = useState<QueuedFile[]>([])
   const [quality, setQuality] = useState(80)
   const [scale, setScale] = useState(100)
+  const [svgOptions, setSvgOptions] = useState<SvgCompressionOptions>({ preserveMetadata: true, aggressive: false })
   const [announcement, setAnnouncement] = useState("Ready to add files.")
   const workerRef = useRef<Worker | null>(null)
   const updateServiceWorkerRef = useRef<((reloadPage?: boolean) => Promise<void>) | null>(null)
@@ -79,13 +80,13 @@ function App() {
     const format = fileFormat(file)
     setFiles((current) => [...current, { id, name: file.name, format, originalSize: file.size, progress: 0, status: "processing" }])
     setAnnouncement(`${file.name} added and processing started.`)
-    file.arrayBuffer().then((buffer) => worker.postMessage({ id, file: buffer, format, quality, scale }, [buffer])).catch(() => {
+    file.arrayBuffer().then((buffer) => worker.postMessage({ id, file: buffer, format, quality, scale, svgOptions }, [buffer])).catch(() => {
       setFiles((current) => current.map((item) => item.id === id ? { ...item, status: "error", error: "Could not read this file." } : item))
     })
   }
 
   const handleDrop = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
-    if (rejectedFiles.length > 0) setAnnouncement(`${rejectedFiles.length} unsupported file${rejectedFiles.length === 1 ? "" : "s"} rejected. Add JPEG, PNG, WebP, PDF, or MP4 files.`)
+    if (rejectedFiles.length > 0) setAnnouncement(`${rejectedFiles.length} unsupported file${rejectedFiles.length === 1 ? "" : "s"} rejected. Add JPEG, PNG, SVG, WebP, PDF, or MP4 files.`)
     acceptedFiles.forEach(processFile)
   }
 
@@ -110,7 +111,7 @@ function App() {
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <SkipLinks items={[{ target: "#main-content", text: "Skip to main content" }, { target: "#compression-controls", text: "Skip to compression controls" }]} />
       <div className="mx-auto max-w-7xl px-5 py-6 sm:px-8 lg:px-10">
-        <AppHeader quality={quality} scale={scale} onQualityChange={setQuality} onScaleChange={setScale} />
+        <AppHeader quality={quality} scale={scale} svgOptions={svgOptions} onQualityChange={setQuality} onScaleChange={setScale} onSvgOptionsChange={setSvgOptions} />
         <div aria-live="polite" className="sr-only">{announcement}</div>
         <section id="main-content" tabIndex={-1} className="py-6 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring lg:py-8"><ImageDropzone onFilesSelected={handleDrop} /><CompressionQueue files={files} onClear={clearFiles} onRemove={removeFile} /></section>
         <footer className="flex flex-col gap-3 border-t border-border/70 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between"><span className="flex items-center gap-2"><Zap className="size-3.5 text-amber-300" />No uploads. No accounts. No compromises.</span><a className="text-foreground underline decoration-border underline-offset-2 transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring" href="https://github.com/JoaoTMDias/LocalSqueeze" target="_blank" rel="noopener noreferrer">Free, Open and Local by design</a></footer>

@@ -1,5 +1,9 @@
-export type ImageFormat = "jpeg" | "png" | "webp"
+export type ImageFormat = "jpeg" | "png" | "webp" | "svg"
 export type FileFormat = ImageFormat | "pdf" | "mp4"
+export type SvgCompressionOptions = {
+  preserveMetadata: boolean
+  aggressive: boolean
+}
 export type QueueStatus = "processing" | "complete" | "error"
 
 export type QueuedFile = {
@@ -28,6 +32,7 @@ export function formatBytes(bytes: number) {
 }
 
 export function imageFormat(file: File): ImageFormat {
+  if (file.type === "image/svg+xml" || /\.svg$/i.test(file.name)) return "svg"
   if (file.type === "image/png" || /\.png$/i.test(file.name)) return "png"
   if (file.type === "image/webp" || /\.webp$/i.test(file.name)) return "webp"
   return "jpeg"
