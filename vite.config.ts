@@ -13,7 +13,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["logo.svg"],
       manifest: {
         name: "LocalSqueeze",
         short_name: "LocalSqueeze",
@@ -24,8 +24,8 @@ export default defineConfig({
         theme_color: "#0f172a",
         icons: [
           {
-            src: "/favicon.svg",
-            sizes: "any",
+            src: "/logo.svg",
+            sizes: "256x256",
             type: "image/svg+xml",
             purpose: "any maskable",
           },
