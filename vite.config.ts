@@ -15,8 +15,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["logo.svg"],
       manifest: {
-        name: "LocalSqueeze",
-        short_name: "LocalSqueeze",
+        name: "Squeeezer",
+        short_name: "Squeeezer",
         description: "Private image optimization in your browser",
         start_url: "/",
         display: "standalone",
@@ -40,7 +40,7 @@ export default defineConfig({
             urlPattern: /\.(?:js|css|woff2)$/,
             handler: "CacheFirst",
             options: {
-              cacheName: "localsqueeze-static-resources",
+              cacheName: "squeeezer-static-resources",
               expiration: {
                 maxEntries: 60,
                 maxAgeSeconds: 60 * 60 * 24 * 30,
@@ -51,7 +51,7 @@ export default defineConfig({
             urlPattern: /\.wasm$/,
             handler: "CacheFirst",
             options: {
-              cacheName: "localsqueeze-wasm-resources",
+              cacheName: "squeeezer-wasm-resources",
               expiration: {
                 maxEntries: 20,
                 maxAgeSeconds: 60 * 60 * 24 * 30,

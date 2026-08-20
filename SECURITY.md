@@ -2,7 +2,7 @@
 
 ## Scope
 
-LocalSqueeze is designed to process files locally in the browser. The project does not provide an upload API or a server-side file-processing service.
+Squeeezer is designed to process files locally in the browser. The project does not provide an upload API or a server-side file-processing service.
 
 ## Reporting a vulnerability
 

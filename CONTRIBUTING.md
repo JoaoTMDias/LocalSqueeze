@@ -1,6 +1,6 @@
-# Contributing to LocalSqueeze
+# Contributing to Squeeezer
 
-Thanks for contributing. LocalSqueeze is a client-side project, so changes should preserve privacy, accessibility, and browser responsiveness.
+Thanks for contributing. Squeeezer is a client-side project, so changes should preserve privacy, accessibility, and browser responsiveness.
 
 ## Before you start
 

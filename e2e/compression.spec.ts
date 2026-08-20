@@ -5,7 +5,7 @@ const onePixelPng = Buffer.from(
   "base64",
 );
 
-test.describe("LocalSqueeze compression workflow", () => {
+test.describe("Squeeezer compression workflow", () => {
   test("compresses a PNG in the production browser build", async ({ page }) => {
     const progressValues: string[] = [];
     page.on("console", (message) => {

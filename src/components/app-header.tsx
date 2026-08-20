@@ -77,7 +77,7 @@ export function AppHeader({
         </div>
         <div>
           <h1 className="font-heading text-lg font-semibold tracking-tight text-foreground">
-            LocalSqueeze
+            Squeeezer
           </h1>
           <p className="text-sm text-muted-foreground">
             Make files lighter. Keep them yours.

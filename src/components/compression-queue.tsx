@@ -30,7 +30,7 @@ export function CompressionQueue({
     if (!file.outputUrl) return;
     const link = document.createElement("a");
     link.href = file.outputUrl;
-    link.download = `localsqueeze-${file.name}`;
+    link.download = `squeeezer-${file.name}`;
     link.click();
   };
 

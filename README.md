@@ -1,6 +1,6 @@
-# LocalSqueeze
+# Squeeezer
 
-LocalSqueeze is a privacy-first file compression app for the browser. JPEG, PNG, WebP, PDF, and MP4 files are processed locally on the user's device. Files are not uploaded to a server.
+Squeeezer is a privacy-first file compression app for the browser. JPEG, PNG, WebP, SVG, PDF, and MP4 files are processed locally on the user's device. Files are not uploaded to a server.
 
 ## Features
 
@@ -121,7 +121,7 @@ Security issues should be reported according to [SECURITY.md](SECURITY.md), not 
 
 ## Branding
 
-The source code is available under the MIT License. “LocalSqueeze” and the project logo are project branding and are not granted for use as the name or identity of modified or hosted versions. Forks are welcome; please use a distinct name and visual identity so users can tell them apart from the official project.
+The source code is available under the MIT License. “Squeeezer” and the project logo are project branding and are not granted for use as the name or identity of modified or hosted versions. Forks are welcome; please use a distinct name and visual identity so users can tell them apart from the official project.
 
 ## Known limitations
 
